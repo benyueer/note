@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    /**
+     *  闭包变量存放位置
+     */
+    // function createFun() {
+    //   let str = '123'
+    //   let arr = new Array(10000).join('x') 
+    //   return function fun() {
+    //     console.log(arr, str)
+    //   }
+    // }
+
+    // let fun = createFun()
+    // fun()
+
+    /**
+     * 造成内存泄漏
+     */
+    let arr = []
+    function fun() {
+      arr.push(createFun())
+    }
+    setInterval(fun, 100)
+    function createFun() {
+      let str = new Array(1000000).join('x')
+      return function getStr() {
+        return str
+      }
+    }
+  </script>
+</body>
+</html>
