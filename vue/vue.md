@@ -215,3 +215,53 @@ update会执行queueWatcher，他会将Watcher添加到队列里
 否则通过key将vnode缓存起来，并将key移到数组最后
 ~~~
 
+### Tips
+
+- 当watch监听的是对象时，修改对象的属性，是获取不到oldValue的，详情如下：
+    ```js
+    import { defineComponent, onMounted, reactive, watch } from "vue";
+    import _ from "lodash";
+
+    export default defineComponent({
+    setup() {
+        const state = reactive({
+        data: {
+            name: '123'
+        }
+        })
+        watch(
+        () => state.data,
+        (val, old) => {
+            console.log(_.isEqual(val, old))
+            console.log(val, old)
+        },
+        { deep: true }
+        ),
+        onMounted(() => {
+        setTimeout(() => {
+            state.data = {name: '123213'} // 这种方式会获取到oldValue
+            state.data.name = '123213' // 这种方式不会获取到oldValue，因为这里是直接修改对象的属性，引用数据类型都指向同一个对象
+        }, 2000)
+        })
+    },
+    })
+
+
+    /**
+     * vue的Watch的run方法
+     */
+    run () {
+        const value = this.get()
+        const oldValue = this.value
+        this.value = value
+        this.cb.call(this.vm, value, oldValue)
+    }
+
+    // 在例子中，我们监听的是 state.data， 那么在Watch的value就是state.data,当我们修改state.data的属性时，Watch的this.value指向相同，会被同时修改。
+    // 即：this.value -> state.data -> {name: '123'}
+    // oldValue -> state.data -> {name: '123'}
+    // value -> state.data -> {name: '123213'}
+    // this.value value oldValue都指向同一块内存，也就获取不到oldValue了
+
+    // 但当我们执行state.data = {name: '123123'}时，value指向了新对象{name: '123123'}, this.value还指向state.data，oldValue由this.value赋值而来，那么this.value和oldValue都指向修改前的state.data，value指向修改后的state.value，因此可以获取到oldValue
+    ```

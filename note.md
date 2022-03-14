@@ -72,6 +72,14 @@ function myInstanceof (obj, Ctor) {
 
 
 ### 9.new操作符
+```js
+function myNew(constructor, ...args) {
+  const obj = {}
+  obj.__proto__ = constructor.prototype
+  const result = constructor.apply(obj, args)
+  return result instanceof Object ? result : obj
+}
+```
 
 
 ### 10.消息队列，事件循环
