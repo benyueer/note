@@ -30,7 +30,8 @@ function myInstanceof (obj, Ctor) {
 - 转为number时，null转为0，undefined转为NaN
 - 比较两个值时，双等号返回true，三等号返回false
 
-### 3.prototype和proto
+### 原型
+#### 3.prototype和proto
 - `prototype`是函数才有的属性,解决继承, 这个对象的用途就是包含所有实例共享的属性和方法（我们把这个对象叫做原型对象）。原型对象也有一个属性，叫做constructor，这个属性包含了一个指针，指回原构造函数。
 - `__proto__`是每个对象都有的属性,指向构造函数的原型
 - `__proto__===constructor.prototype` （构造器原型）字面量、构建函数方式的指向
@@ -41,7 +42,28 @@ function myInstanceof (obj, Ctor) {
 
 - 如果构造函数返回的是Object,那么new出来的就是返回值,如果返回的是基本类型,new出来的就是构造函数生成的对象
 
-### 4.原型链终点是null
+#### 4.原型链终点是null
+
+#### prototype的constructor属性
+构造函数原型上的`constructor`属性，指向构造函数本身，当我们实现继承时，会将原型指向父类实例，那么在访问`constructor`属性时，就会访问到父类的`constructor`属性，而不是子类的`constructor`属性。
+当遇到通过子类实例构造新子类实例的场景时，就会错误的构造出父类实例，所以修正后的`constructor`属性，可以正确的构造出子类实例。
+```js
+function Parent() {
+  this.name = 'parent'
+}
+
+function Child() {
+  Parent.call(this)
+  this.name = 'child'
+}
+Child.prototype = Object.create(Parent.prototype)
+
+Child.prototype.constructor = Child
+
+child1 = new Child()
+
+child2 = new child1.constructor()
+```
 
 ### 5.js继承
 
@@ -355,9 +377,86 @@ obj => |0x34342|0x43322| => {a: 1, b: 2}
       HTTP1中，如果想并发多个请求，需要在不同的TCP上完成，一般浏览器限制TCP的数量为6-8，超出的连接会被挂起等待
    3. 首部压缩：HTTP是无状态的，每次请求都会在请求头添加请求信息，会产生很多重复信息，http2将请求头进行压缩，减少空间占用
    4. 服务端推送
+4. http3.0
+   <!-- TODO -->
 
 
+##### HTTP2.0的一些特征
+http2中，有了二进制分帧后，不再依赖多个TCP实现多流并行
+- 同一域名下的所有请求都在一个连接上完成，一个域名只占用一个TCP连接，使用一个连接并发多个请求和响应
+- 单个连接可以承载任意的双向数据流，多个请求响应互补干扰
+- 数据流以消息的形式发送，而消息又由一个或多个帧合成，多个帧可以乱序发送，根据帧首部的流标识组装
+
+>###### 帧
+http2中的**数据最小传输单位**
+###### 流
+存在于连接中的一个虚拟通道
+[参考](https://juejin.cn/post/6844903935648497678)
+
+**HTTP2的缺陷**
+由于http2的多路复用，所有请求都通过同一个TCP发送和响应，那么当TCP丢包时，就会进行重传等操作，这会影响到所有的请求，在这种情况下，http2的性能反而不如http1.1
+由此出现了http3，解决这个问题
+
+
+##### HTTP连接限制
+1. http请求结束后TCP是否会断开？
+   在http1.0中，请求结束后会断开TCP，但当服务器设置`Connection: keep-alive`后，就不会断开TCP，那么在下一次连接时，SSL的开销也可避免
+2. 一个TCP可以对应多少个请求？
+   如果断开连接，只能对应一个请求，当设置了`Connection: keep-alive`时，可以对应多个请求
+3. 一个TCP中的HTTP能够同时发送同时响应吗？
+   http1.1中存在一个问题：单个TCP链接在同一时刻只能处理一个请求，也就是说两个请求的生命周期不能重叠
+   http1.1规定了`Pipeline`试图解决这个问题，但这个属性默认是关闭的
+   - Pipeline：一个支持持久连接的客户端可以可以在一个连接中发送多个请求（不需要等待请求的响应），收到请求的服务器必须按照收到请求的顺序发送响应
+     之所以这么设计的原因：http1.1是一个文本协议，同时返回的响应不能区分对应哪一个请求，，所以顺序必须保持一致
+     Pipeline在实际中存在很多问题：
+     1. 一些代理服务器不能正确处理Pipeline
+     2. 流水线实现是复杂的
+     3. 连接头阻塞：建立一个TCP连接后，如果客户端发送了几个请求，按照标准，服务器应该按照相同的顺序响应，加入服务器在处理首个请求时花费了大量时间，那么所有的请求都会受到影响
+4. 浏览器对同一Host建立TCP数量的限制
+   Chrome 最多允许对同一个 Host 建立六个 TCP 连接。不同的浏览器有一些区别
+   - 那么当网页中有多个同一Host的资源时怎么处理呢？
+     - 如果是HTTPS链接，那么浏览器就会和服务器商量能不能用HTTP2，使用`Multiplexing`多路传输
+     - 如果是HTTP1.1，就会建立多个TCP连接
+
+<!-- todo -->
 wep-push
+
+##### 在浏览器中调试HTTP
+通常会在控制台的network面板查看网络资源的加载情况，通过`Waterfall`部分查看资源时序
+Waterfall中的属性：
+- `Queuing` (排队)
+  浏览器在以下情况下对请求排队
+  存在更高优先级的请求,请求被渲染引擎推迟，这经常发生在 images（图像）上,因为它被认为比关键资源（如脚本/样式）的优先级低。
+  此源已打开六个 TCP 连接，达到限值，仅适用于 HTTP/1.0 和 HTTP/1.1。在等待一个即将被释放的不可用的 TCP socket
+  浏览器正在短暂分配磁盘缓存中的空间，生成磁盘缓存条目（通常非常快）
+- `Stalled` (停滞) - 发送请求之前等待的时间。它可能因为进入队列的任意原因而被阻塞，这个时间包括代理协商的时间。请求可能会因 Queueing 中描述的任何原因而停止。
+- `DNS lookup` (DNS 查找) - 浏览器正在解析请求 IP 地址，页面上的每个新域都需要完整的往返(roundtrip)才能进行 DNS 查找
+- `Proxy Negotiation` - 浏览器正在与代理服务器协商请求
+- `initial connection` (初始连接) - 建立连接所需的时间，包括 TCP 握手/重试和协商 SSL。
+- `SSL handshake` (SSL 握手) - 完成 SSL 握手所用的时间
+- `Request sent` (请求发送) - 发出网络请求所花费的时间，通常是几分之一毫秒。
+- `Waiting` (等待) - 等待初始响应所花费的时间，也称为Time To First Byte(接收到第一个字节所花费的时间)。这个时间除了等待服务器传递响应所花费的时间之外，还包括 1 次往返延迟时间及服务器准备响应所用的时间（服务器发送数据的延迟时间）
+- `Content Download`(内容下载) - 接收响应数据所花费的时间(从接收到第一个字节开始，到下载完最后一个字节结束)
+- `ServiceWorker Preparation` - 浏览器正在启动 Service Worker
+- `Request to ServiceWorker` - 正在将请求发送到 Service Worker
+- `Receiving Push` - 浏览器正在通过 HTTP/2 服务器推送接收此响应的数据
+- `Reading Push` - 浏览器正在读取之前收到的本地数据
+
+1. 资源优先级
+<img src="./images/资源优先级.png" />
+打开`Priority`属性，可以查看资源的优先级，doc和css资源优先级比js高，[具体情况查看该链接](https://juejin.cn/post/6844903789518946311)
+
+2. connection id
+打开`connection id`属性，可以查看请求的连接id,在http1.1中可以发现请求来自不同的连接，在http2中，连接是相同的
+<img src="./images/connection_id.png" alt="http1.1" />
+<img src="./images/connectid_http2.png" alt="http2" />
+
+3. Waterfall
+这个选项是网络时序，蓝线代表`DOMContentLoaded`事件，红线代表`load`事件，从中还能发现http1.1的请求时序是低于http2的
+<img src="./images/waterfall_http1.png" alt="http1">
+<img src="./images/waterfall_http2.png" alt="http2">
+
+
 
 ### 浏览器渲染流程
 css文件 script标签是否打断渲染 
@@ -651,3 +750,5 @@ storage
 在请求该资源时就会发送`a.com`的cookie，如果`a.com`仅依靠cookie验证身份，那么这次攻击就是成功的
 解决办法：增加其他校验手段
 
+#### CSP
+<!-- todo -->
