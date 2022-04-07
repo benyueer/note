@@ -457,6 +457,10 @@ Waterfall中的属性：
 <img src="./images/waterfall_http2.png" alt="http2">
 
 
+#### 一些特殊首部字段
+Range
+
+
 
 ### 浏览器渲染流程
 css文件 script标签是否打断渲染 
@@ -741,6 +745,12 @@ storage
 当用户点击链接时，就会将cookie发送到`abc.com`
 解决办法：可以设置`httponly`，防止js获取cookie
 
+1. DOM型
+2. 反射型
+3. 存储型
+
+[参考](https://juejin.cn/post/6844903942036389895)
+
 #### CSRF
 跨站请求伪造
 例如用户在未关闭`a.com`的情况下又访问了`b.com`，`b.com`中如果有一个指向`a.com`的资源：
@@ -752,3 +762,5 @@ storage
 
 #### CSP
 <!-- todo -->
+
+### 前端监控

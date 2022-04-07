@@ -92,4 +92,19 @@ function test4() {
 
 }
 
-test4()
+// test4()
+
+async function test5() {
+  function fun() {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        console.log(2)
+        resolve(1)
+      },1000)
+    })
+  }
+
+  await Promise.resolve(fun())
+  console.log(3)
+}
+test5()

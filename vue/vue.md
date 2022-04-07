@@ -265,3 +265,115 @@ update会执行queueWatcher，他会将Watcher添加到队列里
 
     // 但当我们执行state.data = {name: '123123'}时，value指向了新对象{name: '123123'}, this.value还指向state.data，oldValue由this.value赋值而来，那么this.value和oldValue都指向修改前的state.data，value指向修改后的state.value，因此可以获取到oldValue
     ```
+
+
+### 计算属性惰性求值
+`computed`在定义时设置`lazy=true`
+```js
+const computedWatcherOptions = { lazy: true }
+
+watchers[key] = new Watcher(
+  vm,
+  getter || noop,
+  noop,
+  computedWatcherOptions
+)
+```
+当`lazy`为`true`时，`Watcher`是不会求值的
+```js
+this.value = this.lazy
+      ? undefined
+      : this.get()
+```
+同时由于没有执行过`get`方法，也就没有进行依赖收集，如果定义的计算属性没有在任何地方使用过，就算依赖项改变，也不会触发计算
+当读取计算属性值时会触发`getter`,执行`get`方法，并将结果赋值给`value`，同时会进行依赖收集
+
+#### 计算属性的定义过程
+1. 首先`initState`,如果配置项中有`computed`配置，则执行`initComputed`方法
+  ```js
+  export function initState (vm: Component) {
+    ......
+    if (opts.computed) initComputed(vm, opts.computed)
+    ......
+  }
+  ```
+2. `initComputed`方法会为每一个计算属性生成一个`Watcher`，并将其放入`vm._computedWatchers`中
+   计算属性`Watcher`比较特殊，`lazy=true`,不会立即求值
+  ```js
+  function initComputed (vm: Component, computed: Object) {
+    const watchers = vm._computedWatchers = Object.create(null)
+    for (const key in computed) {
+    const userDef = computed[key]
+    const getter = typeof userDef === 'function' ? userDef : userDef.get
+
+    if (!isSSR) {
+      watchers[key] = new Watcher(
+        vm,
+        getter || noop,
+        noop,
+        computedWatcherOptions
+      )
+    }
+    if (!(key in vm)) {
+      defineComputed(vm, key, userDef)
+    }
+  }
+  ```
+3. `defineComputed`方法会在`vm`上注册对应计算属性值的属性，会为其设置对应的getter和setter方法
+   ```js
+  export function defineComputed (
+    target: any,
+    key: string,
+    userDef: Object | Function
+  ) {
+    const shouldCache = !isServerRendering()
+    if (typeof userDef === 'function') {
+      sharedPropertyDefinition.get = shouldCache
+        ? createComputedGetter(key)
+        : createGetterInvoker(userDef)
+      sharedPropertyDefinition.set = noop
+    } else {
+      sharedPropertyDefinition.get = userDef.get
+        ? shouldCache && userDef.cache !== false
+          ? createComputedGetter(key)
+          : createGetterInvoker(userDef.get)
+        : noop
+      sharedPropertyDefinition.set = userDef.set || noop
+    }
+    Object.defineProperty(target, key, sharedPropertyDefinition)
+  }
+   ```
+4. `getter`方法分为是否服务端渲染两种情况，`setter`方法则是直接设置用户传入的值，未传入则为空
+   1. 服务端渲染
+      此时直接执行计算属性的回调拿到结果即可
+      ```js
+      function createGetterInvoker(fn) {
+        return function computedGetter () {
+          return fn.call(this, this)
+        }
+      }
+      ```
+   2. 非服务端渲染
+      此时需要从`Watcher`中获取值
+      找到对应的`Watcher`，并执行求值
+      ```js
+      function createComputedGetter (key) {
+        return function computedGetter () {
+          const watcher = this._computedWatchers && this._computedWatchers[key]
+          if (watcher) {
+            if (watcher.dirty) {
+              watcher.evaluate()
+            }
+            if (Dep.target) {
+              watcher.depend()
+            }
+            return watcher.value
+          }
+        }
+      }
+      ```
+      <!-- todo -->
+      if (Dep.target) {
+              watcher.depend()
+            }的作用
+
