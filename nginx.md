@@ -558,3 +558,7 @@ $document_uri ： 与$uri相同。
 
 [nginx变量](https://juejin.cn/post/6844904097812840461)
 [参考](https://juejin.cn/post/7072616582110773262)
+
+
+#### 配置字段
+client_body_buffer_size
