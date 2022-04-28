@@ -1,0 +1,104 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS权重-例1</title>
+  <style>
+    div {
+      width: 200px;
+      height: 200px;
+    }
+  </style>
+  <link rel="stylesheet" href="./styles/red.css">
+  <style>
+    @import url('./styles/yellow.css');
+  </style>
+</head>
+<body>
+  <div></div>
+  <p>link引入red，@import引入yellow</p>
+  <span>此时为黄色背景，绿色边框</span>
+</body>
+</html>
+ -->
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS权重-例2</title>
+  <style>
+    div {
+      width: 200px;
+      height: 200px;
+    }
+  </style>
+  <link rel="stylesheet" href="./styles/yellow.css">
+  <style>
+    @import url('./styles/red.css');
+  </style>
+</head>
+
+<body>
+  <div></div>
+  <p>link引入yellow，@import引入red</p>
+  <span>此时为红色背景，蓝色边框</span>
+  <p>如果把link和@import的顺序调换，会发现后引入的资源会覆盖先引入的，也就是说link和@import没有权重的概念，只是后来的样式会覆盖之前的样式</p>
+</body>
+
+</html> -->
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS权重-例3</title>
+  <style>
+    @import url('./styles/yellow.css');
+    div {
+      background-color: pink;
+    }
+  </style>
+  <style>
+    div {
+      width: 200px;
+      height: 200px;
+    }
+  </style>
+</head>
+<body>
+  <div></div>
+  <p>style里使用@import引入样式，同时在style里设置相同的样式</p>
+  <span>盒子为粉色背景，绿色边框</span>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS权重-例4</title>
+  <style>
+    div {
+      width: 200px;
+      height: 200px;
+    }
+  </style>
+  <link rel="stylesheet" href="./styles//blue.css">
+</head>
+<body>
+  <div></div>
+  <p>使用link引入样式，引入的资源内又使用@import引入了其他样式</p>
+  <span>通过例3和例4可知，在同时使用link和@import的时候，@import的样式是会生效的，如例3和例4中的边框，但是有些样式又会被其他资源覆盖，导致我们看到的都是其他资源里的样式，误以为是因为link比@import优先级高，实际上并无优先级的区别，只是后来的样式会覆盖之前的样式</span>
+</body>
+</html>

@@ -1,4 +1,4 @@
-### 1.js变量类型
+### js变量类型
 - 基本类型：string, number, boolean, null, undefined
 - 引用类型：object, array, function
 判断类型：
@@ -25,7 +25,10 @@ function myInstanceof (obj, Ctor) {
   return false
 }
 ```
-### 2.null undefined 区别
+
+#### Symbol
+
+### null undefined 区别
 - null和undefined是基本类型，undefined表示未定义，null表示空对象
 - 转为number时，null转为0，undefined转为NaN
 - 比较两个值时，双等号返回true，三等号返回false
@@ -65,9 +68,9 @@ child1 = new Child()
 child2 = new child1.constructor()
 ```
 
-### 5.js继承
+### js继承
 
-### 6.闭包
+### 闭包
 
 #### 闭包的变量是怎么存储的
 [闭包中的变量到底存在哪里？](https://juejin.cn/post/6887054571080777735)
@@ -76,13 +79,16 @@ child2 = new child1.constructor()
 
 在闭包存在时，会生成一个内部对象`[[Scopes]]`，代表作用域链，其内部存在`[[Closure]]`对象，代表闭包的变量。
 
-### 7.作用域链
+### 作用域链
 
   #### 变量对象、活动对象
   [变量对象、活动对象](https://juejin.cn/post/6990526490911703048)
 
 
-### 8.this
+
+
+### 事件
+### this
 
 #### call、apply、bind
 [apply, call性能问题](https://www.jianshu.com/p/7c797a565f14)
@@ -93,7 +99,7 @@ child2 = new child1.constructor()
 `call` `apply`都是立即调用函数，`bind`是返回一个绑定好上下文的函数，供以后调用
 
 
-### 9.new操作符
+### new操作符
 
 1. 创建一个新对象
 2. 将构造函数的作用域赋给新对象
@@ -118,9 +124,13 @@ function myNew(constructor, ...args) {
 ```
 
 
-### 10.消息队列，事件循环
+### 消息队列，事件循环
+<!-- todo -->
+js的事件循环
+js的微任务和宏任务有哪些
+js的事件循环和node事件循环的区别
 
-### 11.Promise
+### Promise
 
 
 
@@ -557,6 +567,17 @@ css硬件加速
 
     [参考1](https://juejin.cn/post/6990526490911703048)
 
+- `new Function`、`eval`、`with()`
+  详见code>new Function>eval>with
+  - new Function
+    新建一个函数，最后一个参数为函数题，之前的参数为新函数的参数列表
+    该函数执行时的作用域为全局作用域
+  - eval
+    将字符串当成代码执行
+  - with
+    将对象作为上下文执行代码
+  
+
 ### HTTP缓存
 浏览器缓存分为强缓存和协商缓存，浏览器加载一个页面的简单流程如下：
 
@@ -631,6 +652,8 @@ css硬件加速
 - 代理
 
 - H5提供postMessage()方法
+
+#### 跨域与Cookie
 
 
 
@@ -735,6 +758,12 @@ cookie4会被发送，domain/path都符合
 
 storage
 
+##### 跨域与Cookie以及CSRF与Cookie的疑惑
+[参考](https://juejin.cn/post/6844903934310498312)
+[参考2](https://juejin.cn/post/6958413563799011365)
+[参考3](https://www.cnblogs.com/imgss/p/cors.html)
+总结：跨域时不会携带本域的cookie，但会携带目标域的cookie，浏览器会自动添加符合要求的cookie
+
 
 ### 安全
 #### XSS
@@ -764,3 +793,101 @@ storage
 <!-- todo -->
 
 ### 前端监控
+
+### Web Worker
+
+
+### DOM BOM
+  #### 元素位置和大小
+
+  #### document.ready和window.onload的区别
+
+  #### windowOnload 和 DOMready 哪个先触发
+
+
+### 原生方法
+详见code>原生方法
+1. Object
+   1. `Object.assign(obj1[, obj2[, ...objN]])`
+      通过复制一个或多个对象来创建新的对象
+      [参考](https://juejin.cn/post/6971998812889940005)
+   2. `Object.create(proto, [propertiesObject])`
+      使用指定的原型对象和属性创建新的对象
+   3. Object.defineProperty()
+      给对象添加属性并指定该属性的配置
+   4. Object.defineProperties()
+      给对象添加多个属性并指定其配置
+   5. Object.entries()
+      返回给定对象**自身**的可枚举属性的键值对数组
+   6. Object.freeze()
+      冻结对象，其他代码不能更改该对象的任何属性，不能添删除属性，原型也不能被修改
+   7. Object.getOwnPropertyDescriptor()
+   8. Object.getOwnPropertyDescriptors()
+   9.  Object.getOwnPropertyNames()
+   10. Object.getOwnPropertySymbols()
+   11. Object.getPrototypeOf()
+   12. Object.is()
+       比较两个值是否相等，所有的NaN都相等
+   13. Object.isExtensible()
+   14. Object.isFrozen()
+   15. Object.isSealed()
+   16. Object.keys()
+       返回给定对象的**自身**可枚举属性的数组
+   17. Object.values()
+       返回给定对象**自身**可枚举值的数组
+   18. Object.preventExtensions()
+   19. Object.seal()
+      防止其他代码删除对象的属性
+   20. Object.setPrototypeOf()
+2. Array
+   1. Array.from()
+      从类数组对象或可迭代对象创建一个新的数组
+   2. Array.isArray()
+      判断变量是不是数组类型
+   3. Array.of()
+      根据一组参数来创建一个新的数组
+   4. Array.prototype.copyWithin()
+   5. Array.prototype.entries()
+      浅复制数组的一部分到数组的另一个位置，并返回他，不会改变数组的长度
+   6. Array.prototype.every()
+      测试数组的元素是否都满足指定条件，返回boolean
+   7. Array.prototype.fill()
+      用一个固定值填充数组
+   8.  Array.prototype.filter()
+      过滤出符合条件的元素，返回新数组
+   9.  Array.prototype.find()
+      返回满足测试条件的第一个元素或undefined
+   10. Array.prototype.findIndex()
+      返回满足测试条件的第一个元素的索引或undefined
+   11. Array.prototype.flat()
+      按照给定的层级扁平化数组
+   12. Array.prototype.flatMap()
+      使用映射函数映射每个元素，然后将结果压缩成一个新数组
+   13. Array.prototype.forEach()
+      遍历数组
+   14. Array.prototype.includes()
+      检查数组是否包含指定元素
+   15. Array.prototype.indexOf()
+      返回指定元素的索引，如果不存在则返回-1
+   16. Array.prototype.join()
+      将数组中的所有元素连接成一个字符串
+   17. Array.prototype.keys()
+      返回一个新的数组迭代器，返回数组中的键
+   18. Array.prototype.lastIndexOf()
+      返回指定元素最后出现的索引，如果不存在则返回-1
+   19. Array.prototype.map()
+   20. Array.prototype.pop()
+   21. Array.prototype.push()
+   22. Array.prototype.reduce()
+   23. Array.prototype.reduceRight()
+   24. Array.prototype.reverse()
+   25. Array.prototype.shift()
+   26. Array.prototype.slice()
+   27. Array.prototype.some()
+   28. Array.prototype.sort()
+   29. Array.prototype.splice()
+   30. Array.prototype.toLocaleString()
+   31. Array.prototype.toSource()
+   32. Array.prototype.toString()
+   33. Array.prototype.unshift()
+   34. Array.prototype.values()

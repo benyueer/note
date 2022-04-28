@@ -140,3 +140,8 @@ yy` 复制一行，还有 `nyy
 
 
 
+### undo redo
+- undo
+  u或:undo
+- redo
+  :redo
