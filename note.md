@@ -762,7 +762,7 @@ storage
 [参考](https://juejin.cn/post/6844903934310498312)
 [参考2](https://juejin.cn/post/6958413563799011365)
 [参考3](https://www.cnblogs.com/imgss/p/cors.html)
-总结：跨域时不会携带本域的cookie，但会携带目标域的cookie，浏览器会自动添加符合要求的cookie
+总结：跨域时不会携带本域的cookie，但会携带目标域的cookie，浏览器会自动添加符合要求的cookie，但是`samesite`选项使第三方cookie受到限制.
 
 
 ### 安全
