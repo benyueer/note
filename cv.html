@@ -7,13 +7,15 @@
   <title>Document</title>
   <style>
     body {
-      width: 595px;
+      width: 795px;
       background-color: #FFF;
       margin: 0;
       padding: 24px 64px;
       display: flex;
       flex-direction: column;
       gap: 24px;
+      color: #555;
+      box-sizing: border-box;
     }
     .page {
       align-self: center;
@@ -21,37 +23,107 @@
       height: 842px;
     }
     .title-1 {
-      font-size: 24px;
+      font-size: 34px;
+      color: #333;
       font-weight: bold;
       text-align: center;
       margin-bottom: 24px;
+      text-align: left;
+    }
+    .info {
+      margin-bottom: 32px;
+    }
+    .info-item {
+      display: inline-block;
+      border-right: 2px #aaa solid;
+      padding-right: 16px;
+      margin-right: 16px;
+    }
+    .info-item:last-child {
+      border-right: none;
     }
     .title-2 {
       width: 100%;
       height: 40px;
+      letter-spacing: 1px;
       font-size: 18px;
       line-height: 40px;
       padding: 0 16px;
-      background: #eee;
-      color: #51a8ff;
+      margin-bottom: 12px;
+      background: #F2F6FC;
+      color: #409EFF;
       position: relative;
     }
     .title-2-decorate {
       position: absolute;
-      background-color: #8ec5fc;
+      background-color: #409EFF;
       width: 4px;
       height: 100%;
       top: 0;
       left: 0;
     }
+    .line-info {
+      display: flex;
+      justify-content: space-between;
+      color: #409EFF;
+      margin-bottom: 12px;
+    }
+    .line-info > span {
+      display: inline-block;
+      width: 200px;
+    }
+    .line-info > span:last-child {
+      width: 120px;
+      text-align: right;
+    }
   </style>
 </head>
 <body>
   <div class="page">
-    <p class="title-1">biaoto</p>
+    <p class="title-1">张世冬</p>
+    <div class="info">
+      <span class="info-item">男</span>
+      <span class="info-item">24岁</span>
+      <span class="info-item">2年经验</span>
+      <span class="info-item">17645790639</span>
+      <span class="info-item">zsd17645790639@163.com</span>
+    </div>
     <div class="title-2">
       <div class="title-2-decorate"></div>
-      <span>请问阿斯顿</span>
+      <span>技术技能</span>
+    </div>
+    <ul>
+      <li>熟悉JS、HTML、CSS、TS等</li>
+      <li>熟悉Vue、React、Angular等前端框架及其生态，并了解其基本原理和实现</li>
+      <li>熟悉Node，能够使用express、koa、nest等进行服务开发</li>
+    </ul>
+    <div class="title-2">
+      <div class="title-2-decorate"></div>
+      <span>教育背景</span>
+    </div>
+    <div class="line-info">
+      <span>2016.9-2020.6</span>
+      <span>哈尔滨理工大学</span>
+      <span>网络工程</span>
+    </div>
+    <div class="title-2">
+      <div class="title-2-decorate"></div>
+      <span>工作经历</span>
+    </div>
+    <div class="line-info">
+      <span>2021.8-至今</span>
+      <span>杭州十域科技有限公司</span>
+      <span>前端开发工程师</span>
+    </div>
+    <div class="line-info">
+      <span>2021.2-2021.7</span>
+      <span>高途课堂</span>
+      <span>前端开发工程师</span>
+    </div>
+    <div class="line-info">
+      <span>2020.6-2021.2</span>
+      <span>青岛乾程科技有限公司</span>
+      <span>前端开发工程师</span>
     </div>
   </div>
   <div class="page"></div>
