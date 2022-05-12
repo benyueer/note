@@ -17,9 +17,39 @@
 #### context
 
 #### 高阶组件
+[参考](https://juejin.cn/post/6940422320427106335)
+
+##### 优缺点
+  > HOC
+    优点
+    通过传递props去影响内层组件的状态，不直接改变内层组件的状态，降低了耦合度
+    缺点
+    组件多层嵌套， 增加复杂度与理解成本
+    ref隔断， React.forwardRef 来解决
+    高阶组件多层嵌套，相同命名的props会覆盖老属性
+    不清楚props来源与哪个高阶组件
+    render props
+    优点
+    props命名可修改，不存在相互覆盖
+    清楚props来源
+    不会出现组件多层嵌套
+    缺点
+    函数回调形式的嵌套
+    写法繁琐，没有hoc装饰器写法简单
+    无法在return以外的地方访问数据
+    hook
+    优点
+    解决了hoc，render props的嵌套问题
+    可以在 return 之外使用数据
+    可以重命名，不存在覆盖，且清楚数据来源
+    缺点
+    在闭包场景可能会引用到旧的state、props值
+
+
 
 #### ref  forwordRef
 
+#### hook原理
 #### hooks
 - useEffect
   `useEffect`钩子相当于生命周期方法`componentDidMount`、`componentDidUpdate`和`componentWillUnmount`的组合
@@ -96,3 +126,9 @@ class App extends PureComponent {
 
 ##### pure functional component
 React.memo可以使函数式组件实现PureComponent的特点 
+
+
+#### 懒加载（lazy）原理
+[参考](https://juejin.cn/post/6844904191853494280)
+
+#### reactElement\reactComponent\fiberNode

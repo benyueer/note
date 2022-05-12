@@ -129,6 +129,7 @@ function myNew(constructor, ...args) {
 js的事件循环
 js的微任务和宏任务有哪些
 js的事件循环和node事件循环的区别
+[参考](https://github.com/aooy/blog/issues/5)
 
 ### Promise
 
@@ -798,6 +799,39 @@ storage
 
 
 ### DOM BOM
+  参考：
+  1. [load-DOMContentLoaded](https://juejin.cn/post/6844903623583891469)
+  2. [load-DOMContentLoaded1](https://zh.javascript.info/onload-ondomcontentloaded)
+  #### load
+  window.onload 在页面的所有资源加载完毕时触发，应当用于检测一个完全加载的页面
+  #### DOMContentLoaded
+  在页面的DOM树加载完毕时触发，但此时其他资源如img、css等可能还未加载完成
+  浏览器会等待脚本执行完成才会触发DOMContentLoaded事件
+  ⚠️但有例外：
+   - 带有async的脚本不会阻塞DOMContentLoaded
+   - 使用`document.createElement('script)`动态创建的脚本不会阻塞DOMContentLoaded
+
+  DOMContentLoaded与样式：
+  外部样式表不会影响 DOM，因此 DOMContentLoaded 不会等待它们。
+  但这里有一个陷阱。如果在样式后面有一个脚本，那么该脚本必须等待样式表加载完成：
+
+  ```html
+  <link type="text/css" rel="stylesheet" href="style.css">
+  <script>
+    // 在样式表加载完成之前，脚本都不会执行
+    alert(getComputedStyle(document.body).marginTop);
+  </script>
+  ```
+  原因是，脚本可能想要获取元素的坐标和其他与样式相关的属性，如上例所示。因此，它必须等待样式加载完成。
+
+  当 DOMContentLoaded 等待脚本时，它现在也在等待脚本前面的样式。
+
+
+  #### document.readyState
+
+  #### document.onreadystatechange
+
+
   #### 元素位置和大小
 
   #### document.ready和window.onload的区别
