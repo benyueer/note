@@ -128,8 +128,9 @@ function myNew(constructor, ...args) {
 <!-- todo -->
 js的事件循环
 js的微任务和宏任务有哪些
-js的事件循环和node事件循环的区别
 [参考](https://github.com/aooy/blog/issues/5)
+#### 浏览器的事件循环和node事件循环的区别
+[参考](https://juejin.cn/post/6844903761949753352)
 
 ### Promise
 
@@ -797,6 +798,8 @@ storage
 
 ### Web Worker
 
+### npm run 发生了什么
+[参考](https://juejin.cn/post/7078924628525056007)
 
 ### DOM BOM
   参考：

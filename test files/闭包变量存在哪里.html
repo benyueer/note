@@ -11,31 +11,32 @@
     /**
      *  闭包变量存放位置
      */
-    // function createFun() {
-    //   let str = '123'
-    //   let arr = new Array(10000).join('x') 
-    //   return function fun() {
-    //     console.log(arr, str)
-    //   }
-    // }
+    function createFun() {
+      let str = '123'
+      let arr = new Array(10000).join('x') 
+      let out = 123
+      return function fun() {
+        console.log(arr, str)
+      }
+    }
 
-    // let fun = createFun()
-    // fun()
+    let fun = createFun()
+    fun()
 
     /**
      * 造成内存泄漏
      */
-    let arr = []
-    function fun() {
-      arr.push(createFun())
-    }
-    setInterval(fun, 100)
-    function createFun() {
-      let str = new Array(1000000).join('x')
-      return function getStr() {
-        return str
-      }
-    }
+    // let arr = []
+    // function fun() {
+    //   arr.push(createFun())
+    // }
+    // setInterval(fun, 100)
+    // function createFun() {
+    //   let str = new Array(1000000).join('x')
+    //   return function getStr() {
+    //     return str
+    //   }
+    // }
   </script>
 </body>
 </html>
