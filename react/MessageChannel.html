@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    const {port1, port2} = new MessageChannel();
+    port1.onmessage = function(e) {
+      console.log('port1 has mas, ', e);
+    };
+    port2.onmessage = function(e) {
+      console.log('port2 has mas, ', e);
+    };
+    port1.postMessage('port1', {});
+    port2.postMessage('port2');
+  </script>
+</body>
+</html>

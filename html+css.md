@@ -59,6 +59,13 @@
 元素会被移出正常文档流，并不为元素预留空间，而是通过指定元素相对于屏幕视口（viewport）的位置来指定元素位置。元素的位置在屏幕滚动时不会改变。打印时，元素会出现在的每页的固定位置。fixed 属性会创建新的层叠上下文。**当元素祖先的 `transform`, `perspective` 或 `filter` 属性非 `none` 时，容器由视口改为该祖先**。
 
 
+### CSS Module
+- 是什么：
+  所有的类名和动画名称默认都有各自的作用域的 CSS 文件。CSS Modules 并不是 CSS 官方的标准，也不是浏览器的特性，而是使用一些构建工具，比如 webpack，对 CSS 类名和选择器限定作用域的一种方式（类似命名空间）
+
+  [参考1](https://segmentfault.com/a/1190000039846173)
+  [参考2](https://developer.51cto.com/article/707429.html)
+
 ### html的head标签
 [参考](https://www.cnblogs.com/belongs-to-qinghua/p/10950535.html)
 他的作用是保存页面的`元数据`

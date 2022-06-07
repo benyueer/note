@@ -472,6 +472,18 @@ Waterfall中的属性：
 #### 一些特殊首部字段
 Range
 
+#### post 请求的 `content-type`
+1. `x-www-form-urlencoded`
+   默认值，提交的数据的key、value都进行了URL转码
+   只能上传键值对，用`&`连接
+2. `multipart/form-data`
+   一般用来上传文件
+   可以上传文件或者键值对，最后都会转化为一条消息
+3. `application/json`
+   告诉服务端消息是序列化的JSON字符串
+[参考](https://juejin.cn/post/6988417425196711943)
+
+
 
 
 ### 浏览器渲染流程
