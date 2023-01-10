@@ -853,6 +853,32 @@ storage
 
   #### windowOnload 和 DOMready 哪个先触发
 
+  #### postMessage
+  `postMesage`方法可以安全的实现跨域，获得页面的`window`引用后通过该方法发送消息
+  一般在`iframe`中使用，与父页面通信，或浏览器插件、`window.open`的页面，使用时注意*域*的问题
+  ```js
+    otherWindow.postMessage(message, targetOrigin, [transfer]);
+
+    otherWindow
+    其他窗口的一个引用，比如 iframe 的 contentWindow 属性、执行window.open返回的窗口对象、或者是命名过或数值索引的window.frames (en-US)。
+
+    message
+    将要发送到其他 window 的数据。它将会被结构化克隆算法 (en-US)序列化。这意味着你可以不受什么限制的将数据对象安全的传送给目标窗口而无需自己序列化。[
+
+    targetOrigin
+    通过窗口的 origin 属性来指定哪些窗口能接收到消息事件，其值可以是字符串"*"（表示无限制）或者一个 URI。在发送消息的时候，如果目标窗口的协议、主机地址或端口这三者的任意一项不匹配 targetOrigin 提供的值，那么消息就不会被发送；只有三者完全匹配，消息才会被发送。这个机制用来控制消息可以发送到哪些窗口；例如，当用 postMessage 传送密码时，这个参数就显得尤为重要，必须保证它的值与这条包含密码的信息的预期接受者的 origin 属性完全一致，来防止密码被恶意的第三方截获。如果你明确的知道消息应该发送到哪个窗口，那么请始终提供一个有确切值的 targetOrigin，而不是 *。不提供确切的目标将导致数据泄露到任何对数据感兴趣的恶意站点。
+
+    transfer 可选
+    是一串和 message 同时传递的 Transferable 对象。这些对象的所有权将被转移给消息的接收方，而发送一方将不再保有所有权。
+    ```
+    消息接收方：
+  ```js
+  window.addEventListener('mesage', (message) => {})
+  ```
+
+  #### window.open
+  [参考](https://developer.mozilla.org/zh-CN/docs/Web/API/Window/open)
+
 
 ### 原生方法
 详见code>原生方法
