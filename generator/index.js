@@ -92,7 +92,7 @@ function test4() {
 
 }
 
-// test4()
+test4()
 
 async function test5() {
   function fun() {
@@ -107,4 +107,4 @@ async function test5() {
   await Promise.resolve(fun())
   console.log(3)
 }
-test5()
+// test5()

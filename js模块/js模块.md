@@ -108,6 +108,60 @@ import()允许模块路径动态生成
 - 如果想同时加载多个模块，可以使用Promise.all
 - import()也可以用在 async 函数之中
 
+特性：
+1. `import`优先执行
+   `import`命令会被js引擎静态分析，优先于模块内其他内容执行
+   ```js
+    // a.js
+    console.log('a.js')
+    import {foo} from './b.js'
+
+
+    // b.js
+    export let foo = 1
+    console.log('b.js')
+
+    // 执行结果：
+    // b.js
+    // a.js
+   ```
+2. `export`变量声明提升
+    ```js
+    // a.js
+    import {foo} from './b'
+    console.log('a.js')
+    export const bar = 1
+    export const bar2 = () => {
+      console.log('bar2')
+    }
+    export function bar3() {
+      console.log('bar3')
+    }
+
+
+    // b.js
+    export const foo = 1
+    import * as a from './a'
+    console.log(a)
+
+    // 执行结果：
+    // {bar: undefined, bar2: undefined, bar3: function}
+
+    ```
+
+3. 模块不会重复执行
+    ```js
+    // a.js
+    import './b'
+    import './b'
+
+    // b.js
+    console.log('b')
+
+    // 执行结果：
+    // b  // 执行一次
+    ```
+
 
 ##### 细节
 1. ESM编译时执行会导致以下两个特点：
